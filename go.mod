@@ -1,4 +1,4 @@
-module github.com/jing332/xmlydownloader
+module github.com/zdco/xmlydownloader
 
 go 1.14
 
