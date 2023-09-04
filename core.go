@@ -2,13 +2,14 @@ package xmlydownloader
 
 import (
 	"fmt"
-	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"strings"
 	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
-//GetAlbumInfo 获取专辑信息
+// GetAlbumInfo 获取专辑信息
 func GetAlbumInfo(albumID int) (ai *AlbumInfo, err error) {
 	url := fmt.Sprintf("http://mobile.ximalaya.com/mobile-album/album/page/ts-%d?ac=WIFI&albumId=%d&device=android&pageId=1&pageSize=0",
 		time.Now().Unix(), albumID)
@@ -26,14 +27,14 @@ func GetAlbumInfo(albumID int) (ai *AlbumInfo, err error) {
 	return ai, nil
 }
 
-//GetVipAudioInfo 获取VIP音频信息
+// GetVipAudioInfo 获取VIP音频信息
 func GetVipAudioInfo(trackId int, cookie string) (ai *AudioInfo, err error) {
 	ts := time.Now().Unix()
 	url := fmt.Sprintf(
 		"https://mpay.ximalaya.com/mobile/track/pay/%d/%d?device=pc&isBackend=true&_=%d",
 		trackId, ts, ts)
 
-	resp, err := HttpGetByCookie(url, cookie, Android)
+	resp, err := HttpGetByCookie(url, cookie, PC)
 	if err != nil {
 		return ai, fmt.Errorf("获取音频信息失败: %v", err)
 	}
@@ -65,7 +66,7 @@ func GetVipAudioInfo(trackId int, cookie string) (ai *AudioInfo, err error) {
 	return ai, nil
 }
 
-//GetAudioInfo 获取音频信息
+// GetAudioInfo 获取音频信息
 func GetAudioInfo(albumID, page, pageSize int) (audioList []AudioInfo, err error) {
 	format := fmt.Sprintf("https://m.ximalaya.com/m-revision/common/album/queryAlbumTrackRecordsByPage?albumId=%d&page=%d&pageSize=%d&asc=true", albumID, page, pageSize)
 
@@ -90,7 +91,7 @@ func GetAudioInfo(albumID, page, pageSize int) (audioList []AudioInfo, err error
 	return audioList, nil
 }
 
-//GetAllAudioInfo 获取所有音频信息
+// GetAllAudioInfo 获取所有音频信息
 func GetAllAudioInfo(albumID int) (list []*AudioInfo, err error) {
 	firstPlayList, err := GetAudioInfoListByPageID(albumID, 0)
 	if err != nil {
@@ -112,7 +113,7 @@ func GetAllAudioInfo(albumID int) (list []*AudioInfo, err error) {
 	return list, nil
 }
 
-//GetAudioInfoListByPageID 使用PageID获取音频信息列表
+// GetAudioInfoListByPageID 使用PageID获取音频信息列表
 func GetAudioInfoListByPageID(albumID, pageID int) (playlist *Playlist, err error) {
 	url := fmt.Sprintf("http://mobwsa.ximalaya.com/mobile/playlist/album/page?albumId=%d&pageId=%d",
 		albumID, pageID)
@@ -136,9 +137,9 @@ func GetAudioInfoListByPageID(albumID, pageID int) (playlist *Playlist, err erro
 	return playlist, nil
 }
 
-//GetTrackList 获取音频列表
+// GetTrackList 获取音频列表
 //
-//isAsc: true为升序(默认), false为降序
+// isAsc: true为升序(默认), false为降序
 func GetTrackList(albumID, pageID int, isAsc bool) (tracks *TrackList, err error) {
 	url := fmt.Sprintf(
 		"https://mobile.ximalaya.com/mobile/v1/album/track/ts-%d?ac=WIFI&albumId=%d&device=android&isAsc=%t&pageId=%d&pageSize=200",
@@ -157,7 +158,7 @@ func GetTrackList(albumID, pageID int, isAsc bool) (tracks *TrackList, err error
 	return tracks, nil
 }
 
-//GetUserInfo 使用Cookie获取用户信息
+// GetUserInfo 使用Cookie获取用户信息
 func GetUserInfo(cookie string) (*UserInfo, error) {
 	resp, err := HttpGetByCookie("https://www.ximalaya.com/revision/main/getCurrentUser", cookie, PC)
 	if err != nil {
@@ -179,7 +180,7 @@ func GetUserInfo(cookie string) (*UserInfo, error) {
 	return ui, nil
 }
 
-//GetQRCode 获取登录二维码
+// GetQRCode 获取登录二维码
 func GetQRCode() (qrCode *QRCode, err error) {
 	resp, err := HttpGet("https://passport.ximalaya.com/web/qrCode/gen?level=L", PC)
 	if err != nil {
@@ -198,7 +199,7 @@ func GetQRCode() (qrCode *QRCode, err error) {
 	return qrCode, err
 }
 
-//CheckQRCodeStatus 检查二维码的状态
+// CheckQRCodeStatus 检查二维码的状态
 func CheckQRCodeStatus(qrID string) (status *QRCodeStatus, cookie string, err error) {
 	url := fmt.Sprintf("https://passport.ximalaya.com/web/qrCode/check/%s/%d", qrID, time.Now().Unix())
 	resp, err := HttpGet(url, PC)
